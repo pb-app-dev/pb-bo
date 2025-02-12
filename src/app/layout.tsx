@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Zawaji - Backoffice",
-    description: "The backoffice for zawaji",
+    title: "Power Beauty - Back Office",
+    description: "The back office for Power Beauty",
 };
 
 export default function RootLayout({

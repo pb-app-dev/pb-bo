@@ -25,11 +25,8 @@ const Dashboard = () => {
                         {
                             data ? <div className="flex justify-between items-center">
                                 <div className="text-gray-800">
-                                    <div>{data.username}</div>
+                                    <div>{data.first_name + " " + data.last_name}</div>
                                     <div className="text-sm">{data.email}</div>
-                                </div>
-                                <div className="text-gray-800 font-semibold">
-                                    {data.type === 'ADMIN' ? 'Admin' : 'Supervisor'}
                                 </div>
                             </div> : null
                         }

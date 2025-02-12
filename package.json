@@ -1,5 +1,5 @@
 {
-  "name": "zawaji-backoffice",
+  "name": "power-beauty-back-office",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -20,6 +20,7 @@
     "clsx": "^2.1.1",
     "cookies-next": "^5.0.2",
     "formik": "^2.4.6",
+    "input-otp": "^1.4.2",
     "lucide-react": "^0.469.0",
     "next": "15.1.2",
     "react": "^19.0.0",

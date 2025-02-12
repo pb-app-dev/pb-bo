@@ -1,130 +1,175 @@
 "use client";
-
 import React, {useState} from 'react';
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {useRouter} from "next/navigation";
-import {signIn} from "@/actions/auth/signIn";
+import OtpValidationInput from "@/components/auth/OTPValidationInput";
+import useOtpRequest from "@/hooks/auth/useOtpRequest";
+import useVerifyOtp from "@/hooks/auth/useVerifyOtp";
+import {VerifyOtpResponse} from "@/types/auth/verifyOtpResponse";
+import {setCookie} from "cookies-next";
 
 
 const SignInForm = () => {
 
+    const {isPending, mutateAsync} = useOtpRequest();
+    const {isPending: loading, mutateAsync: mutateVerifyOtp} = useVerifyOtp();
+    const [showOtp, setShowOtp] = useState<boolean>(false);
     const [authError, setAuthError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
 
 
-    const formik = useFormik({
+    const phoneFormik = useFormik({
         initialValues: {
-            email: '',
-            password: ''
+            phone: ''
         },
         validationSchema: Yup.object({
-            email: Yup.string()
-                .email('Invalid email address')
-                .required('Email is required'),
-            password: Yup.string()
-                .min(8, 'Password must be at least 8 characters long')
-                .required('Password is required')
-
+            phone: Yup.string()
+                .matches(/^\+\d{10,15}$/, "Enter a valid phone number with '+' prefix")
+                .required("Phone number is required"),
         }),
         onSubmit: async (values) => {
-            const {email, password} = values;
-
-            setAuthError(null);
-            setLoading(true);
-
-            const {error} = await signIn({email, password});
-
-            if (error) {
-                setLoading(false);
-                setAuthError(error);
-                return;
-            }
-
-            setLoading(false);
-            router.push('/dashboard');
+            const {phone} = values;
+            await mutateAsync(phone, {
+                onSuccess: () => {
+                    setShowOtp(true);
+                },
+                onError: () => {
+                    setAuthError("Failed to send OTP");
+                }
+            })
         }
     })
 
-    return (
-        <form onSubmit={formik.handleSubmit}>
-            <div className="mb-5">
-                <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-300 mb-2"
-                >
-                    Email Address
-                </label>
-                <Input
-                    type="email"
-                    name="email"
-                    id="email"
-                    placeholder="Enter your email"
-                    className="text-white"
-                    value={formik.values.email}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                />
-            </div>
-            {
-                formik.touched.email && formik.errors.email ? (
-                    <div className="text-red-500 text-sm mb-4">
-                        {formik.errors.email}
-                    </div>
-                ) : null
-            }
+    const otpFormik = useFormik({
+        initialValues: {
+            otp: ''
+        },
+        validationSchema: Yup.object({
+            otp: Yup.string()
+                .matches(/^\d{6}$/, "Enter a valid OTP")
+                .required("OTP is required"),
+        }),
+        onSubmit: async (values) => {
+            const {otp} = values;
 
-            <div className="mb-5">
-                <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-gray-300 mb-2"
-                >
-                    Password
-                </label>
-                <Input
-                    type="password"
-                    name="password"
-                    id="password"
-                    placeholder="Enter your password"
-                    className="text-white"
-                    value={formik.values.password}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                />
-
-            </div>
-
-            {
-                formik.touched.password && formik.errors.password ? (
-                    <div className="text-red-500 text-sm mb-4">
-                        {formik.errors.password}
-                    </div>
-                ) : null
-            }
-
-            {authError && (
-                <div className="mb-4 text-red-500 text-center text-sm">
-                    {authError}
-                </div>
-            )}
-
-            <Button
-                type="submit"
-                className="w-full bg-primary text-white hover:bg-accent focus:outline-none focus:ring-2 focus:ring-teal-500 flex items-center justify-center transition-colors"
-                disabled={loading || formik.isSubmitting}
-            >
-                {
-                    loading || formik.isSubmitting ? (
-                            "Loading..."
-                        ) :
-                        "Login"
+            await mutateVerifyOtp({
+                phone: phoneFormik.values.phone,
+                code: otp
+            }, {
+                onSuccess: (response: VerifyOtpResponse) => {
+                    setCookie("token", response.token, {
+                        secure: true,
+                        sameSite: "strict",
+                        maxAge: 60 * 60 * 24 * 7,
+                    });
+                    router.push("/dashboard");
+                },
+                onError: () => {
+                    setAuthError("Invalid OTP");
                 }
-            </Button>
+            })
+        }
+    });
 
-        </form>
+    return (
+        <>
+            {
+                !showOtp ?
+                    <form
+                        onSubmit={phoneFormik.handleSubmit}
+                    >
+                        <div className="mb-5">
+                            <label
+                                htmlFor="phone"
+                                className="block text-sm font-medium text-secondary mb-2"
+                            >
+                                Phone
+                            </label>
+                            <Input
+                                type="tel"
+                                name="phone"
+                                id="phone"
+                                placeholder="Enter your phone"
+                                className="text-secondary"
+                                value={phoneFormik.values.phone}
+                                onChange={phoneFormik.handleChange}
+                                onBlur={phoneFormik.handleBlur}
+                            />
+
+                            {
+                                phoneFormik.touched.phone && phoneFormik.errors.phone ? (
+                                    <div className="text-red-500 text-sm mb-4 mt-2">
+                                        {phoneFormik.errors.phone}
+                                    </div>
+                                ) : null
+                            }
+                        </div>
+                        <Button
+                            type="submit"
+                            className="w-full bg-secondary text-primary hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-secondary flex items-center justify-center transition-colors"
+                            disabled={isPending}
+                        >
+                            {
+                                isPending ? (
+                                        "Loading..."
+                                    ) :
+                                    "Send OTP"
+                            }
+                        </Button>
+                    </form> : null
+            }
+
+            {
+                showOtp ?
+                    <form onSubmit={otpFormik.handleSubmit}>
+
+                        <div className="mb-5">
+                            <label
+                                htmlFor="otp"
+                                className="block text-sm font-medium text-secondary mb-2"
+                            >
+                                Verification Code
+                            </label>
+                            <OtpValidationInput
+                                name="otp"
+                                value={otpFormik.values.otp}
+                                onChange={(otp) => otpFormik.setFieldValue('otp', otp)}
+                            />
+                            {
+                                otpFormik.touched.otp && otpFormik.errors.otp ? (
+                                    <div className="text-red-500 text-sm mb-4 mt-2">
+                                        {otpFormik.errors.otp}
+                                    </div>
+                                ) : null
+                            }
+
+                        </div>
+
+                        {authError && (
+                            <div className="mb-4 text-red-500 text-center text-sm">
+                                {authError}
+                            </div>
+                        )}
+
+
+                        <Button
+                            type="submit"
+                            className="w-full bg-secondary text-primary hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-secondary flex items-center justify-center transition-colors"
+                            disabled={loading || otpFormik.isSubmitting}
+                        >
+                            {
+                                loading || otpFormik.isSubmitting ? (
+                                        "Loading..."
+                                    ) :
+                                    "Login"
+                            }
+                        </Button>
+                    </form> : null
+            }
+        </>
     );
 };
 

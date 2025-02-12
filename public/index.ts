@@ -1,7 +1,7 @@
 
 
 
-import logo from "./images/zawaji-logo.png";
+import logo from "./images/power-beauty-logo.png";
 
 
 export {
