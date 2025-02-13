@@ -4,7 +4,7 @@ import {getServices} from "@/services/service/getServices";
 const useGetServices = () => {
 
     return useQuery({
-        queryKey: ["get-services"],
+        queryKey: ["get-service"],
         queryFn: getServices,
         retry: 1,
         refetchOnMount: false,

@@ -11,6 +11,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import useGetMe from "@/hooks/user/useGetMe";
 import {deleteCookie} from 'cookies-next';
 import {MdMiscellaneousServices} from "react-icons/md";
+import {BiSolidCategoryAlt} from "react-icons/bi";
 
 interface NavItem {
     name: string;
@@ -21,6 +22,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     {name: 'Home', href: '/dashboard', icon: <FiHome/>},
     {name: 'Services', href: '/dashboard/services', icon: <MdMiscellaneousServices/>},
+    {name: 'Categories', href: '/dashboard/categories', icon: <BiSolidCategoryAlt/>},
 ];
 
 const Sidebar = () => {
