@@ -8,7 +8,7 @@ const useVerifyOtp = () => {
     return useMutation({
         mutationKey: ["verify-otp"],
         mutationFn: async (payload: VerifyOtpPayload): Promise<VerifyOtpResponse> => await verifyOtp(payload.phone, payload.code),
-        retry: 1
+        retry: 0
     })
 }
 

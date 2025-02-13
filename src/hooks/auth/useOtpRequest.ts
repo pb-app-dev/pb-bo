@@ -7,7 +7,7 @@ const useOtpRequest = () => {
     return useMutation({
         mutationKey: ["otp-request"],
         mutationFn: async (phone: string) => await otpRequest(phone),
-        retry: 1
+        retry: 0
     })
 
 }

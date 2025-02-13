@@ -12,6 +12,7 @@ import useGetMe from "@/hooks/user/useGetMe";
 import {deleteCookie} from 'cookies-next';
 import {MdMiscellaneousServices} from "react-icons/md";
 import {BiSolidCategoryAlt} from "react-icons/bi";
+import {FaUsers} from "react-icons/fa6";
 
 interface NavItem {
     name: string;
@@ -21,8 +22,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
     {name: 'Home', href: '/dashboard', icon: <FiHome/>},
+    {name: 'Users', href: '/dashboard/users', icon: <FaUsers/>},
     {name: 'Services', href: '/dashboard/services', icon: <MdMiscellaneousServices/>},
-    {name: 'Categories', href: '/dashboard/categories', icon: <BiSolidCategoryAlt/>},
+    {name: 'Categories', href: '/dashboard/categories', icon: <BiSolidCategoryAlt/>}
 ];
 
 const Sidebar = () => {

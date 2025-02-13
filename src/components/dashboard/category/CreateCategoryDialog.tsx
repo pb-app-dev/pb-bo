@@ -50,48 +50,36 @@ const CreateCategoryDialog = ({isOpen, onClose}: CreateCategoryDialogProps) => {
             const mimeType = values.thumbnail?.type || 'image/png';
             const extension = mimeType.split('/')[1];
 
-            await signedUrl({
-                mimeType,
-                extension
-            }, {
-                onSuccess: async (response) => {
+            await signedUrl({mimeType, extension})
+                .then(async (response) => {
                     const {url, filePath} = response;
 
                     console.log("url", url);
                     console.log("filePath", filePath);
 
-                    await uploadFile({
-                        file: values.thumbnail as File,
-                        url
-                    }, {
-                        onSuccess: async () => {
-                            await mutateAsync({
-                                name: values.name,
-                                thumbnail: filePath
-                            }, {
-                                onError: () => {
-                                    setError("Failed to create category!");
-                                },
-                                onSuccess: async () => {
+                    await uploadFile({file: values.thumbnail as File, url})
+                        .then(async () => {
+                            await mutateAsync({name: values.name, thumbnail: filePath})
+                                .then(async () => {
                                     await queryClient.invalidateQueries({
-                                        queryKey: ['get-categories'],
-                                        type: 'all',
+                                        queryKey: ["get-categories"],
+                                        type: "all",
                                         exact: true,
                                     });
                                     resetForm();
                                     onClose();
-                                }
-                            })
-                        },
-                        onError: () => {
+                                })
+                                .catch(() => {
+                                    setError("Failed to create category!");
+                                });
+                        })
+                        .catch(() => {
                             setError("Failed to upload the thumbnail");
-                        }
-                    })
-                },
-                onError: () => {
+                        });
+                })
+                .catch(() => {
                     setError("Failed to get signed url for the thumbnail");
-                }
-            })
+                });
         }
     });
 

@@ -1,36 +1,36 @@
 import React, {useState} from 'react';
+import {useQueryClient} from "@tanstack/react-query";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import BackgroundPatternDecorative from "@/components/BackgroundPatternDecorative";
-import useDeleteCategory from "@/hooks/category/useDeleteCategory";
-import {useQueryClient} from "@tanstack/react-query";
+import useDeleteService from "@/hooks/service/useDeleteService";
 
 
 interface DeleteConfirmationDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    categoryId: number | null;
+    serviceId: number | null;
 }
 
-const DeleteConfirmationDialog = ({isOpen, onClose, categoryId}: DeleteConfirmationDialogProps) => {
+const DeleteConfirmationDialog = ({isOpen, onClose, serviceId}: DeleteConfirmationDialogProps) => {
 
     const queryClient = useQueryClient();
     const [deleteError, setDeleteError] = useState<string | null>(null);
-    const {isPending, mutateAsync} = useDeleteCategory();
+    const {isPending, mutateAsync} = useDeleteService();
 
 
-    const handleDeleteCategory = async () => {
-        if (!categoryId) return;
-        await mutateAsync(categoryId)
+    const handleDeleteService = async () => {
+        if (!serviceId) return;
+        await mutateAsync(serviceId)
             .then(async () => {
                 await queryClient.invalidateQueries({
-                    queryKey: ['get-categories'],
+                    queryKey: ['get-services'],
                     type: 'all',
                     exact: true,
                 });
                 onClose();
             }).catch(error => {
                 console.log("error", error);
-                setDeleteError("Failed to delete category");
+                setDeleteError("Failed to delete service");
             })
     }
 
@@ -46,7 +46,7 @@ const DeleteConfirmationDialog = ({isOpen, onClose, categoryId}: DeleteConfirmat
                     />
                     <DialogTitle className="text-[#181D27] pt-10 z-10">Are you absolutely sure?</DialogTitle>
                     <DialogDescription className="text-[#535862] text-sm z-10">
-                        This action will delete the category permanently.
+                        This action will delete the service permanently.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -66,7 +66,7 @@ const DeleteConfirmationDialog = ({isOpen, onClose, categoryId}: DeleteConfirmat
                     </button>
                     <button
                         className="w-full border border-red-500 shadow-sm shadow-[#0A0D120D] bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm disabled:opacity-50"
-                        onClick={handleDeleteCategory}
+                        onClick={handleDeleteService}
                         disabled={isPending}
                     >
                         {

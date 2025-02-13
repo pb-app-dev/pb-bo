@@ -7,7 +7,7 @@ const useCreateCategory = () => {
     return useMutation({
         mutationKey: ["create-category"],
         mutationFn: async (data: CreateCategoryPayload) => await createCategory(data),
-        retry: 1,
+        retry: 0,
     })
 
 }

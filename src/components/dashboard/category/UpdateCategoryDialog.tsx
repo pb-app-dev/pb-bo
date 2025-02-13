@@ -17,6 +17,7 @@ import useUpdateCategory from "@/hooks/category/useUpdateCategory";
 import useSignedUrl from "@/hooks/files/useSignedUrl";
 import useUploadFile from "@/hooks/files/useUploadFile";
 import {useQueryClient} from "@tanstack/react-query";
+import {AxiosError} from "axios";
 
 interface UpdateCategoryDialogProps {
     isOpen: boolean;
@@ -57,45 +58,46 @@ const UpdateCategoryDialog = ({isOpen, onClose, category}: UpdateCategoryDialogP
             await signedUrl({
                 mimeType,
                 extension
-            }, {
-                onSuccess: async (response) => {
-                    const {url, filePath} = response;
+            }).then(async (response) => {
+                const {url, filePath} = response;
 
-                    console.log("url", url);
-                    console.log("filePath", filePath);
+                await uploadFile({
+                    file: values.thumbnail as File,
+                    url
+                }).then(async () => {
 
-                    await uploadFile({
-                        file: values.thumbnail as File,
-                        url
-                    }, {
-                        onSuccess: async () => {
-                            await mutateAsync({
-                                id: category.id,
-                                name: values.name,
-                                thumbnail: filePath
-                            }, {
-                                onError: () => {
-                                    setError("Failed to create category!");
-                                },
-                                onSuccess: async () => {
-                                    await queryClient.invalidateQueries({
-                                        queryKey: ['get-categories'],
-                                        type: 'all',
-                                        exact: true,
-                                    });
-                                    resetForm();
-                                    onClose();
-                                }
-                            })
-                        },
-                        onError: () => {
-                            setError("Failed to upload the thumbnail");
-                        }
+                    await mutateAsync({
+                        id: category.id,
+                        name: values.name,
+                        thumbnail: filePath
                     })
-                },
-                onError: () => {
-                    setError("Failed to get signed url for the thumbnail");
-                }
+                        .then(async () => {
+                            await queryClient.invalidateQueries({
+                                queryKey: ['get-categories'],
+                                type: 'all',
+                                exact: true,
+                            });
+                            resetForm();
+                            onClose();
+                        })
+                        .catch(error => {
+                            if (error instanceof AxiosError) {
+                                if (error.status === 422) {
+                                    setError("Category with this name already exists");
+                                } else {
+                                    setError("Failed to create category!");
+                                }
+                            } else {
+                                setError("Failed to create category!");
+                            }
+                        })
+                }).catch(error => {
+                    console.log(error);
+                    setError("Failed to upload the thumbnail");
+                })
+            }).catch(error => {
+                console.log(error);
+                setError("Failed to get signed url for the thumbnail");
             })
         }
     });

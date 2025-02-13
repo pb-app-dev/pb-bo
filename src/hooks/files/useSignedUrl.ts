@@ -6,7 +6,7 @@ const useSignedUrl = () => {
     return useMutation({
         mutationKey: ["get-signed-url"],
         mutationFn: async (payload: SignedUrlPayload) => await signedUrl(payload),
-        retry: 1
+        retry: 0
     })
 }
 

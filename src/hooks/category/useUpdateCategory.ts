@@ -7,7 +7,7 @@ const useUpdateCategory = () => {
     return useMutation({
         mutationKey: ["update-category"],
         mutationFn: async (payload: UpdateCategoryPayload) => updateCategory(payload),
-        retry: 1
+        retry: 0
     })
 
 }
