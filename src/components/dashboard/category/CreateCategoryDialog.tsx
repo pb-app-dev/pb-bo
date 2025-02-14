@@ -16,6 +16,7 @@ import useCreateCategory from "@/hooks/category/useCreateCategory";
 import {useQueryClient} from "@tanstack/react-query";
 import useSignedUrl from "@/hooks/files/useSignedUrl";
 import useUploadFile from "@/hooks/files/useUploadFile";
+import {AxiosError} from "axios";
 
 interface CreateCategoryDialogProps {
     isOpen: boolean;
@@ -69,8 +70,16 @@ const CreateCategoryDialog = ({isOpen, onClose}: CreateCategoryDialogProps) => {
                                     resetForm();
                                     onClose();
                                 })
-                                .catch(() => {
-                                    setError("Failed to create category!");
+                                .catch((error) => {
+                                    if (error instanceof AxiosError) {
+                                        if (error.status === 422) {
+                                            setError("Category with this name already exists");
+                                        } else {
+                                            setError("Failed to create category!");
+                                        }
+                                    } else {
+                                        setError("Failed to create category!");
+                                    }
                                 });
                         })
                         .catch(() => {

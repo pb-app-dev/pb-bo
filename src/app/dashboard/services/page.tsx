@@ -8,7 +8,6 @@ const Services = () => {
     return (
         <div className="flex flex-col gap-6 h-full">
             <Header/>
-            <hr/>
             <ServicesList/>
         </div>
     );

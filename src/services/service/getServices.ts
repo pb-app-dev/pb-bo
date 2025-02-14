@@ -1,11 +1,28 @@
 import {Service} from "@/types/Service";
 import axiosInstance from "@/services/axiosInstance";
+import {Links} from "@/types/Links";
+import {Meta} from "@/types/Meta";
 
 
-export const getServices = async (): Promise<Service[]> => {
+export interface GetServicesParams {
+    page?: number;
+}
 
+export interface GetServicesResponse {
+    data: Service[];
+    links: Links;
+    meta: Meta;
+}
+
+export const getServices = async ({
+                                      page = 1
+                                  }: GetServicesParams): Promise<GetServicesResponse> => {
     try {
-        const response = await axiosInstance.get<Service[]>("/admin/services");
+
+        const url = new URLSearchParams();
+        url.append("page", page.toString());
+
+        const response = await axiosInstance.get<GetServicesResponse>(`/admin/services?${url.toString()}`);
         return response.data;
     } catch (error) {
         return Promise.reject(error);

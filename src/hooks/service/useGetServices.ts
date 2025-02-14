@@ -1,11 +1,13 @@
 import {useQuery} from "@tanstack/react-query";
-import {getServices} from "@/services/service/getServices";
+import {getServices, GetServicesParams} from "@/services/service/getServices";
 
-const useGetServices = () => {
+const useGetServices = (params: GetServicesParams) => {
+
+    const {page} = params;
 
     return useQuery({
-        queryKey: ["get-services"],
-        queryFn: getServices,
+        queryKey: ["get-services", page],
+        queryFn: async () => await getServices(params),
         retry: 1,
         refetchOnMount: false,
         refetchInterval: false

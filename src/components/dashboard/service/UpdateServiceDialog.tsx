@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
+import {Service} from "@/types/Service";
 import {useQueryClient} from "@tanstack/react-query";
-import useGetCategories from "@/hooks/category/useGetCategories";
+import useUpdateService from "@/hooks/service/useUpdateService";
 import {useFormik} from "formik";
 import * as Yup from "yup";
-import useCreateService from "@/hooks/service/useCreateService";
 import {
     Dialog,
     DialogContent,
@@ -13,30 +13,34 @@ import {
     DialogTitle
 } from "@/components/ui/dialog";
 import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
 import {Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import {Button} from "@/components/ui/button";
+import useGetCategories from "@/hooks/category/useGetCategories";
+import {normalizePrice} from "@/utils/normalizePrice";
 
 
-interface CreateServiceDialogProps {
+interface UpdateServiceDialogProps {
     isOpen: boolean;
     onClose: () => void;
+    service: Service | null;
 }
 
-const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
+const UpdateServiceDialog = ({isOpen, onClose, service}: UpdateServiceDialogProps) => {
+
     const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
     const {isPending: isCategoryPending, data} = useGetCategories({
         page: 1
     });
-    const {isPending, mutateAsync} = useCreateService();
-
+    const {isPending, mutateAsync} = useUpdateService();
 
     const formik = useFormik({
+        enableReinitialize: true,
         initialValues: {
-            label: "",
-            price: 0,
-            currency: "eur",
-            category_id: ""
+            label: service?.label || "",
+            price: service?.price ? normalizePrice(service?.price) : 0,
+            currency: service?.currency || "",
+            category_id: service?.category.id || ""
         },
         validationSchema: Yup.object({
             label: Yup.string()
@@ -49,9 +53,18 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
                 .required('Category is required')
         }),
         onSubmit: async (values, {resetForm}) => {
+
+            if (!service) return;
+
             const {label, price, currency, category_id} = values;
 
-            await mutateAsync({label, price, currency, category_id: Number(category_id)})
+            await mutateAsync({
+                id: service.id,
+                label,
+                price: price as number,
+                currency,
+                category_id: Number(category_id)
+            })
                 .then(async () => {
                     await queryClient.invalidateQueries({
                         queryKey: ["get-services"],
@@ -76,10 +89,10 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
             <DialogContent className="sm:max-w-[32rem]">
                 <DialogHeader>
                     <DialogTitle>
-                        Add new service
+                        Update service
                     </DialogTitle>
                     <DialogDescription>
-                        Add a new service to the list
+                        Update service details.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -165,7 +178,7 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
                             </label>
                             <Select
                                 name="category_id"
-                                value={formik.values.category_id}
+                                value={formik.values.category_id.toString()}
                                 onValueChange={(value) =>
                                     formik.setFieldValue('category_id', value)
                                 }
@@ -213,7 +226,7 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
                                 className="w-max self-end"
                             >
                                 {
-                                    isPending ? "Adding service..." : "Add service"
+                                    isPending ? "Updating service..." : "Update service"
                                 }
                             </Button>
                         </div>
@@ -224,4 +237,4 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
     );
 };
 
-export default CreateServiceDialog;
+export default UpdateServiceDialog;

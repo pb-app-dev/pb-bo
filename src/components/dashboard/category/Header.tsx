@@ -15,7 +15,7 @@ const Header = () => {
 
     return (
         <>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center pb-4 bg-white">
                 <h1 className="font-medium text-lg">
                     Categories list
                 </h1>

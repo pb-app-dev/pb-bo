@@ -4,10 +4,10 @@ import {getUsers, GetUsersParams} from "@/services/user/getUsers";
 
 const useGetUsers = (params: GetUsersParams) => {
 
-    const {is_store, status, is_customer} = params;
+    const {page,is_store, status, is_customer} = params;
 
     return useQuery({
-        queryKey: ['get-users', is_store, status, is_customer],
+        queryKey: ['get-users', is_store, status, is_customer, page],
         queryFn: async () => await getUsers(params),
         retry: 1,
         refetchOnMount: false,

@@ -4,9 +4,8 @@ import UsersList from "@/components/dashboard/users/UsersList";
 
 const Users = () => {
     return (
-        <div className="flex flex-col gap-6 h-full">
+        <div className="flex flex-col gap-6 h-full overflow-hidden">
             <Header/>
-            <hr/>
             <UsersList/>
         </div>
     );

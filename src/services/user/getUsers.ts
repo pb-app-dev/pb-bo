@@ -5,9 +5,10 @@ import axiosInstance from "@/services/axiosInstance";
 
 
 export interface GetUsersParams {
-    is_store: 0 | 1;
-    status: "pending" | "validated";
-    is_customer: 0 | 1;
+    is_store?: 0 | 1;
+    status?: "pending" | "validated";
+    is_customer?: 0 | 1;
+    page?: number;
 }
 
 
@@ -20,14 +21,24 @@ export interface GetUsersResponse {
 export const getUsers = async ({
                                    is_store,
                                    status,
-                                   is_customer
+                                   is_customer,
+                                   page = 1
                                }: GetUsersParams): Promise<GetUsersResponse> => {
     try {
 
         const url = new URLSearchParams();
-        url.append("is_store", is_store.toString());
-        url.append("status", status);
-        if (is_store === 0) {
+
+        url.append("page", page.toString());
+
+        if (is_store) {
+            url.append("is_store", is_store.toString());
+        }
+
+        if (status) {
+            url.append("status", status);
+        }
+
+        if (is_store === 0 && is_customer) {
             url.append("is_customer", is_customer.toString());
         }
 

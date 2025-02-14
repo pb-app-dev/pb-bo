@@ -15,7 +15,7 @@ const Header = () => {
 
     return (
         <>
-            <div className="flex justify-between items-center sticky top-0 bg-gray-100 z-10 pb-4">
+            <div className="flex justify-between items-center sticky top-0 z-10 pb-4 bg-white">
                 <h1 className="font-medium text-lg">
                     Services list
                 </h1>

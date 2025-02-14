@@ -50,14 +50,15 @@ const DeleteConfirmationDialog = ({isOpen, onClose, serviceId}: DeleteConfirmati
                     </DialogDescription>
                 </DialogHeader>
 
+                {
+                    deleteError ? (
+                        <div className="text-red-500 text-sm mb-4">
+                            {deleteError}
+                        </div>
+                    ) : null
+                }
+
                 <div className="pt-8 flex gap-4">
-                    {
-                        deleteError ? (
-                            <div className="text-red-500 text-sm mb-4">
-                                {deleteError}
-                            </div>
-                        ) : null
-                    }
                     <button
                         className="w-full rounded-lg border border-[#D5D7DA] py-2 px-3 bg-white text-sm text-[#414651] font-semibold h-max shadow shadow-[#0A0D120D]"
                         onClick={onClose}

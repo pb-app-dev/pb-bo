@@ -85,10 +85,10 @@ const UpdateCategoryDialog = ({isOpen, onClose, category}: UpdateCategoryDialogP
                                 if (error.status === 422) {
                                     setError("Category with this name already exists");
                                 } else {
-                                    setError("Failed to create category!");
+                                    setError("Failed to update category!");
                                 }
                             } else {
-                                setError("Failed to create category!");
+                                setError("Failed to update category!");
                             }
                         })
                 }).catch(error => {
