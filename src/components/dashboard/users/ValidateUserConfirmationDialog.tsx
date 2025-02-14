@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import BackgroundPatternDecorative from "@/components/BackgroundPatternDecorative";
-import useDeclineUser from "@/hooks/user/useDeclineUser";
+import useValidateUser from "@/hooks/user/useValidateUser";
 
 
 interface ValidateUserConfirmationDialogProps {
@@ -18,7 +18,7 @@ const ValidateUserConfirmationDialog = ({
                                             revalidateState
                                         }: ValidateUserConfirmationDialogProps) => {
     const [validateError, setValidateError] = useState<string | null>(null);
-    const {isPending, mutateAsync} = useDeclineUser();
+    const {isPending, mutateAsync} = useValidateUser();
 
     const handleDeclineCategory = async () => {
         if (!userId) return;

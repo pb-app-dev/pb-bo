@@ -74,6 +74,7 @@ const UsersList = () => {
                     setIsCustomer={setIsCustomer}
                     status={status}
                     setStatus={setStatus}
+                    resetPage={() => setCurrentPage(1)}
                 />
                 {
                     isPending ? (
@@ -127,7 +128,8 @@ const UsersList = () => {
                                                                 user.store?.status ?
                                                                     user.store.status === "pending" ?
                                                                         "Pending" :
-                                                                        user.store.status === "validated" ? "Validated" : "-"
+                                                                        user.store.status === "validated" ? "Validated" :
+                                                                            user.store.status === "declined" ? "Declined" : "-"
                                                                     : "-"
                                                             }
                                                         </TableCell>

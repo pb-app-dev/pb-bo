@@ -13,6 +13,6 @@ export interface Store {
     does_home_visits: boolean;
     receives_at_home: boolean;
     store_pictures: string[];
-    status: string;
+    status: "pending" | "validated" | "declined";
     services: Service[];
 }
