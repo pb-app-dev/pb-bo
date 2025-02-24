@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {FiHome, FiLogOut} from 'react-icons/fi';
+import {FiLogOut} from 'react-icons/fi';
 import {usePathname, useRouter} from 'next/navigation';
 import {ReactNode} from 'react';
 import {Button} from "@/components/ui/button";
@@ -21,7 +21,6 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-    {name: 'Home', href: '/dashboard', icon: <FiHome/>},
     {name: 'Users', href: '/dashboard/users', icon: <FaUsers/>},
     {name: 'Services', href: '/dashboard/services', icon: <MdMiscellaneousServices/>},
     {name: 'Categories', href: '/dashboard/categories', icon: <BiSolidCategoryAlt/>}
@@ -29,7 +28,7 @@ const navItems: NavItem[] = [
 
 const Sidebar = () => {
 
-    const {isLoading} = useGetMe();
+    const {isLoading, data} = useGetMe();
 
     const pathname = usePathname();
     const queryClient = useQueryClient();
@@ -87,7 +86,19 @@ const Sidebar = () => {
                                 </Link>
                             ))}
                         </nav>
-                        <div className="px-4 py-6 border-t border-gray-700">
+                        <div className="flex flex-col gap-4 px-4 py-2 border-t border-gray-700">
+                            <div className="flex flex-col">
+                                <div className="text-sm">
+                                    {
+                                        data && data.first_name + ' ' + data.last_name
+                                    }
+                                </div>
+                                <div className="text-xs">
+                                    {
+                                        data && data.email
+                                    }
+                                </div>
+                            </div>
                             <Button
                                 className="flex items-center justify-center w-full bg-secondary hover:bg-secondary/80 text-primary rounded-lg transition-colors group"
                                 onClick={handleSignOut}
