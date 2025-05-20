@@ -63,7 +63,7 @@ const CreateCategoryDialog = ({isOpen, onClose}: CreateCategoryDialogProps) => {
                             await mutateAsync({name: values.name, thumbnail: filePath})
                                 .then(async () => {
                                     await queryClient.invalidateQueries({
-                                        queryKey: ["get-categories"],
+                                        queryKey: ["get-categories", 1],
                                         type: "all",
                                         exact: true,
                                     });

@@ -54,7 +54,7 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
             await mutateAsync({label, price, currency, category_id: Number(category_id)})
                 .then(async () => {
                     await queryClient.invalidateQueries({
-                        queryKey: ["get-services"],
+                        queryKey: ["get-services", 1],
                         type: "all",
                         exact: true,
                     });

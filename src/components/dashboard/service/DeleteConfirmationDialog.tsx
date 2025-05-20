@@ -9,9 +9,10 @@ interface DeleteConfirmationDialogProps {
     isOpen: boolean;
     onClose: () => void;
     serviceId: number | null;
+    currentPage: number;
 }
 
-const DeleteConfirmationDialog = ({isOpen, onClose, serviceId}: DeleteConfirmationDialogProps) => {
+const DeleteConfirmationDialog = ({isOpen, onClose, serviceId, currentPage}: DeleteConfirmationDialogProps) => {
 
     const queryClient = useQueryClient();
     const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -23,7 +24,7 @@ const DeleteConfirmationDialog = ({isOpen, onClose, serviceId}: DeleteConfirmati
         await mutateAsync(serviceId)
             .then(async () => {
                 await queryClient.invalidateQueries({
-                    queryKey: ['get-services'],
+                    queryKey: ['get-services', currentPage],
                     type: 'all',
                     exact: true,
                 });

@@ -38,12 +38,14 @@ const CategoriesList = () => {
                 isOpen={isDeleteDialogOpen}
                 onClose={() => setIsDeleteDialogOpen(false)}
                 categoryId={selectedCategoryId}
+                currentPage={currentPage}
             />
 
             <UpdateCategoryDialog
                 isOpen={isUpdateDialogOpen}
                 onClose={() => setIsUpdateDialogOpen(false)}
                 category={selectedCategory}
+                currentPage={currentPage}
             />
 
             <div className="h-full">
