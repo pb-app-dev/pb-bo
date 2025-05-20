@@ -23,9 +23,10 @@ interface UpdateServiceDialogProps {
     isOpen: boolean;
     onClose: () => void;
     service: Service | null;
+    currentPage: number;
 }
 
-const UpdateServiceDialog = ({isOpen, onClose, service}: UpdateServiceDialogProps) => {
+const UpdateServiceDialog = ({isOpen, onClose, service, currentPage}: UpdateServiceDialogProps) => {
 
     const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
@@ -67,7 +68,7 @@ const UpdateServiceDialog = ({isOpen, onClose, service}: UpdateServiceDialogProp
             })
                 .then(async () => {
                     await queryClient.invalidateQueries({
-                        queryKey: ["get-services"],
+                        queryKey: ["get-services", currentPage],
                         type: "all",
                         exact: true,
                     });

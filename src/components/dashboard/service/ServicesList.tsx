@@ -39,12 +39,14 @@ const ServicesList = () => {
                 isOpen={isDeleteDialogOpen}
                 onClose={() => setIsDeleteDialogOpen(false)}
                 serviceId={selectedServiceId}
+                currentPage={currentPage}
             />
 
             <UpdateServiceDialog
                 isOpen={isUpdateDialogOpen}
                 onClose={() => setIsUpdateDialogOpen(false)}
                 service={selectedService}
+                currentPage={currentPage}
             />
 
             <div className="h-full">

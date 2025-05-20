@@ -23,9 +23,10 @@ interface UpdateCategoryDialogProps {
     isOpen: boolean;
     onClose: () => void;
     category: Category | null;
+    currentPage: number;
 }
 
-const UpdateCategoryDialog = ({isOpen, onClose, category}: UpdateCategoryDialogProps) => {
+const UpdateCategoryDialog = ({isOpen, onClose, category, currentPage}: UpdateCategoryDialogProps) => {
 
     const queryClient = useQueryClient();
     const [error, setError] = useState<string | null>(null);
@@ -73,7 +74,7 @@ const UpdateCategoryDialog = ({isOpen, onClose, category}: UpdateCategoryDialogP
                     })
                         .then(async () => {
                             await queryClient.invalidateQueries({
-                                queryKey: ['get-categories'],
+                                queryKey: ['get-categories', currentPage],
                                 type: 'all',
                                 exact: true,
                             });
