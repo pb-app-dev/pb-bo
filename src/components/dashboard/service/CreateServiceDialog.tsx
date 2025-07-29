@@ -34,15 +34,16 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
     const formik = useFormik({
         initialValues: {
             label: "",
-            price: 0,
+            price: "",
             currency: "eur",
             category_id: ""
         },
         validationSchema: Yup.object({
             label: Yup.string()
                 .required('Label is required'),
-            price: Yup.number()
-                .required('Price is required'),
+            price: Yup.string()
+                .required('Price is required')
+                .matches(/^\d+([,.]\d{1,2})?$/, 'Price must be a valid number with at most 2 decimal places'),
             currency: Yup.string()
                 .required('Currency is required'),
             category_id: Yup.string()
@@ -51,7 +52,10 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
         onSubmit: async (values, {resetForm}) => {
             const {label, price, currency, category_id} = values;
 
-            await mutateAsync({label, price, currency, category_id: Number(category_id)})
+            // Convert price string to number and multiply by 100 for backend
+            const priceInCents = Math.round(parseFloat(price.replace(',', '.')) * 100);
+
+            await mutateAsync({label, price: priceInCents, currency, category_id: Number(category_id)})
                 .then(async () => {
                     await queryClient.invalidateQueries({
                         queryKey: ["get-services", 1],
@@ -114,7 +118,8 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
                             <Input
                                 id="price"
                                 name="price"
-                                type="number"
+                                type="text"
+                                placeholder="38.50 or 38,50"
                                 value={formik.values.price}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -190,9 +195,9 @@ const CreateServiceDialog = ({isOpen, onClose}: CreateServiceDialogProps) => {
                                 </SelectContent>
                             </Select>
                             {
-                                formik.touched.currency && formik.errors.currency ?
+                                formik.touched.category_id && formik.errors.category_id ?
                                     <div className="text-sm text-red-500">
-                                        {formik.errors.currency}
+                                        {formik.errors.category_id}
                                     </div> : null
                             }
                         </div>
