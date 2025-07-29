@@ -39,15 +39,16 @@ const UpdateServiceDialog = ({isOpen, onClose, service, currentPage}: UpdateServ
         enableReinitialize: true,
         initialValues: {
             label: service?.label || "",
-            price: service?.price ? normalizePrice(service?.price) : 0,
+            price: service?.price ? (normalizePrice(service.price) / 100).toString().replace('.', ',') : "",
             currency: service?.currency || "",
             category_id: service?.category.id || ""
         },
         validationSchema: Yup.object({
             label: Yup.string()
                 .required('Label is required'),
-            price: Yup.number()
-                .required('Price is required'),
+            price: Yup.string()
+                .required('Price is required')
+                .matches(/^\d+([,.]\d{1,2})?$/, 'Price must be a valid number with at most 2 decimal places'),
             currency: Yup.string()
                 .required('Currency is required'),
             category_id: Yup.string()
@@ -59,10 +60,13 @@ const UpdateServiceDialog = ({isOpen, onClose, service, currentPage}: UpdateServ
 
             const {label, price, currency, category_id} = values;
 
+            // Convert price string to number and multiply by 100 for backend
+            const priceInCents = Math.round(parseFloat(price.replace(',', '.')) * 100);
+
             await mutateAsync({
                 id: service.id,
                 label,
-                price: price as number,
+                price: priceInCents,
                 currency,
                 category_id: Number(category_id)
             })
@@ -76,7 +80,7 @@ const UpdateServiceDialog = ({isOpen, onClose, service, currentPage}: UpdateServ
                     onClose();
                 }).catch((error) => {
                     console.log("error", error);
-                    setError("Failed to create service");
+                    setError("Failed to update service");
                 })
         }
 
@@ -128,7 +132,8 @@ const UpdateServiceDialog = ({isOpen, onClose, service, currentPage}: UpdateServ
                             <Input
                                 id="price"
                                 name="price"
-                                type="number"
+                                type="text"
+                                placeholder="38.50 or 38,50"
                                 value={formik.values.price}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -204,9 +209,9 @@ const UpdateServiceDialog = ({isOpen, onClose, service, currentPage}: UpdateServ
                                 </SelectContent>
                             </Select>
                             {
-                                formik.touched.currency && formik.errors.currency ?
+                                formik.touched.category_id && formik.errors.category_id ?
                                     <div className="text-sm text-red-500">
-                                        {formik.errors.currency}
+                                        {formik.errors.category_id}
                                     </div> : null
                             }
                         </div>
@@ -239,3 +244,4 @@ const UpdateServiceDialog = ({isOpen, onClose, service, currentPage}: UpdateServ
 };
 
 export default UpdateServiceDialog;
+

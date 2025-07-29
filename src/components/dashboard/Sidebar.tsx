@@ -49,7 +49,7 @@ const Sidebar = () => {
                     <Image
                         src={logo}
                         alt="zawaji-logo"
-                        className="w-48 object-cover object-center"
+                        className="w-48 h-8 object-cover object-center"
                     />
                 </div>
             </div>
